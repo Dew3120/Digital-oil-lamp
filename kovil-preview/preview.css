@@ -1,0 +1,26 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #031020; }
+body { display: grid; place-items: center; font-family: 'Segoe UI', Arial, sans-serif; }
+.stage { width: min(100vw, 177.6833156vh); aspect-ratio: 1672 / 941; position: relative; overflow: hidden; }
+.backdrop, #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.backdrop { object-fit: contain; pointer-events: none; user-select: none; }
+#scene { pointer-events: none; }
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; cursor: pointer; }
+.lamp-hotspot { position: absolute; border: 0; padding: 0; background: transparent; border-radius: 50%; }
+#main-lamp { left: 40.5%; top: 37%; width: 18.5%; height: 18%; }
+.lamp-hotspot:focus-visible { outline: 2px solid #a9efff; outline-offset: 5px; box-shadow: 0 0 22px #7bdcff77; }
+.controls { position: absolute; inset: 0; pointer-events: none; }
+.controls button { position: absolute; top: 91.499%; height: 6.27%; border: 0; border-radius: 100px; background: transparent; color: transparent; padding: 0; pointer-events: auto; font-weight: 650; font-size: clamp(9px, 1.01vw, 17px); }
+#previous { left: 25.239%; width: 11.842%; }
+#undo { left: 38.278%; width: 10.406%; }
+#pause { left: 49.82%; width: 11.065%; }
+#fullscreen { left: 62.14%; width: 12.5%; }
+.controls button:hover { background: #48cbff10; box-shadow: 0 0 20px #55cbff30; }
+.controls button:focus-visible { outline: 2px solid #ceefff; outline-offset: 2px; }
+#pause[aria-pressed='true'] { color: #d6efff; background: #082742; border: 1px solid #5dccea; }
+#loading { position: absolute; left: 35%; right: 35%; top: 43%; min-height: 65px; display: flex; align-items: center; justify-content: center; gap: 12px; border: 1px solid #70d4ef55; border-radius: 10px; background: #04182ce8; color: #d3eafa; font-size: 13px; }
+#loading[hidden] { display: none; }
+#loading span { width: 22px; height: 22px; border: 2px solid #447b9566; border-top-color: #9deeff; border-radius: 50%; animation: loading 1s linear infinite; }
+@keyframes loading { to { transform: rotate(360deg); } }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { #loading span { animation: none; } }

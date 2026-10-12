@@ -8,7 +8,7 @@ const smooth = value => { const t = Math.min(1, Math.max(0, value)); return t * 
 
 /** Owns one cancellable timeline. State changes remain with the ceremony app. */
 export class CeremonyMotion {
-  constructor({ screen, sendLamp, onBusy }) {
+  constructor({ screen, sendLamp, onBusy, boardRenderer }) {
     this.screen = screen;
     this.sendLamp = sendLamp;
     this.onBusy = onBusy;
@@ -17,7 +17,8 @@ export class CeremonyMotion {
     this.finaleLayer = screen.querySelector('#finale-layer');
     this.status = screen.querySelector('#motion-status');
     this.screen.append(this.screen.querySelector('.ceremony-tools'));
-    this.boardRenderer = new BoardLampRenderer({ canvas: screen.querySelector('#status-lamp-canvas'), board: this.board });
+    this.boardHome = this.board.parentElement;
+    this.boardRenderer = boardRenderer || new BoardLampRenderer({ canvas: screen.querySelector('#status-lamp-canvas'), board: this.board });
     this.animations = new Set();
     this.pausedAnimations = new Set();
     this.busy = false;
@@ -53,7 +54,7 @@ export class CeremonyMotion {
       for (const animation of this.pausedAnimations) if (animation.playState === 'paused') animation.play();
       this.pausedAnimations.clear();
     }
-    this.boardRenderer.setPaused(this.paused || this.screen.classList.contains('finale-welcome'));
+    this.boardRenderer.setPaused(this.paused || (!this.boardRenderer.isKovilStageRenderer && this.screen.classList.contains('finale-welcome')));
     this.finale?.setPaused(this.paused);
     this.sendLamp({ type: 'pause', value: this.paused || this.screen.classList.contains('finale-running') });
     const button = this.screen.querySelector('#pause-ceremony');
@@ -87,6 +88,11 @@ export class CeremonyMotion {
 
   cancel() {
     this.version++;
+    this.finaleResizeObserver?.disconnect();
+    if (this.finaleReflow) {
+      window.removeEventListener('resize', this.finaleReflow);
+      document.removeEventListener('fullscreenchange', this.finaleReflow);
+    }
     cancelAnimationFrame(this.frame);
     for (const animation of this.animations) animation.cancel();
     this.screen.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
@@ -96,6 +102,7 @@ export class CeremonyMotion {
     this.finaleLayer.hidden = true;
     this.finale?.setPhase('hidden');
     this.boardRenderer.setTracking(false);
+    if (this.board.parentElement !== this.boardHome) this.boardHome.append(this.board);
     this.screen.classList.remove('finale-running', 'finale-welcome', 'portrait-departing', 'guest-arriving');
     this.screen.dataset.phase = 'ready';
     this.board.removeAttribute('style');
@@ -113,12 +120,16 @@ export class CeremonyMotion {
     this.setBusy(true);
     this.screen.dataset.phase = 'igniting';
     this.boardRenderer.ignite(index);
-    this.announce(this.config.guestDisplayMode === 'photos-only' ? `Lighting lamp ${index + 1}.` : `Lighting the lamp for ${guest.name}.`);
+    const lampsOnly = this.config.guestDisplayMode === 'lamps-only';
+    this.announce(lampsOnly || this.config.guestDisplayMode === 'photos-only' ? `Lighting lamp ${index + 1}.` : `Lighting the lamp for ${guest.name}.`);
     this.screen.querySelector('#ceremony-hint').innerHTML = '<span>Igniting your flame</span><span>A moment of shared purpose</span>';
-    if (!await this.wait(reduced() ? 300 : 1700, version)) return;
+    if (!await this.wait(1700, version)) return;
+    this.screen.dataset.phase = 'flame-hold';
+    this.screen.querySelector('#ceremony-hint').innerHTML = '<span>Your flame is lit</span><span>A moment of shared purpose</span>';
+    if (!await this.wait(1600, version)) return;
     this.screen.dataset.phase = 'portrait-transfer';
     const namesOnly = this.config.guestDisplayMode === 'names-only';
-    const source = this.screen.querySelector(namesOnly ? '.guest-nameplate' : '.portrait-frame');
+    const source = lampsOnly ? null : this.screen.querySelector(namesOnly ? '.guest-nameplate' : '.portrait-frame');
     const target = this.screen.querySelector(`.guest-token[data-guest-index="${index}"]`);
     if (source && target) {
       const from = source.getBoundingClientRect();
@@ -198,8 +209,11 @@ export class CeremonyMotion {
     const screenRect = this.screen.getBoundingClientRect();
     const slots = [...this.screen.querySelectorAll('.status-lamp')];
     const bowls = slots.map(slot => slot.querySelector('.status-bowl').getBoundingClientRect());
-    const plan = createLampFormation({ width: screenRect.width, height: screenRect.height, rowCounts: rows });
+    let plan = createLampFormation({ width: screenRect.width, height: screenRect.height, rowCounts: rows });
+    const initialGatherDuration = plan.gatherDuration;
     const centers = bowls.map(rect => ({ x: rect.left - screenRect.left + rect.width / 2, y: rect.top - screenRect.top + rect.height / 2 }));
+    if (this.boardRenderer.isKovilStageRenderer) this.screen.append(this.board);
+    this.screen.classList.add('finale-running');
     slots.forEach((slot, index) => {
       Object.assign(slot.style, {
         position: 'absolute', left: `${centers[index].x - plan.lampWidth / 2}px`, top: `${centers[index].y - plan.lampHeight / 2}px`,
@@ -214,27 +228,49 @@ export class CeremonyMotion {
     this.boardRenderer.setTracking(true);
     this.finaleLayer.hidden = false;
     this.finale?.setPhase('compuvate');
-    this.finale?.setCompuvateLayout({ centerX: plan.centerX, centerY: plan.centerY, diameter: plan.logoDiameter });
+    const alignFinaleLogo = () => {
+      const screenBounds = this.screen.getBoundingClientRect();
+      const canvasBounds = this.screen.querySelector('#finale-3d').getBoundingClientRect();
+      this.finale?.setCompuvateLayout({
+        centerX: screenBounds.left + plan.centerX - canvasBounds.left,
+        centerY: screenBounds.top + plan.centerY - canvasBounds.top,
+        diameter: plan.logoDiameter
+      });
+      if (!this.finale) Object.assign(this.screen.querySelector('#finale-logo-fallback').style, {
+        left: `${plan.centerX}px`, top: `${plan.centerY}px`, width: `${plan.logoDiameter}px`,
+        height: `${plan.logoDiameter}px`, maxHeight: 'none', transform: 'translate(-50%, -50%)'
+      });
+    };
+    alignFinaleLogo();
     const fallback = this.screen.querySelector('#finale-logo-fallback');
     fallback.src = 'assets/compuvate-logo.png';
     this.screen.dataset.phase = 'finale-gather';
-    this.screen.querySelector('#finale-eyebrow').textContent = `${slots.length} FLAMES. ONE SHARED FUTURE.`;
+    this.screen.querySelector('#finale-eyebrow').textContent = 'MANY FLAMES. ONE FUTURE.';
     const reducedMode = reduced();
     const exitDuration = reducedMode ? 120 : 700;
     const queueSpeed = reducedMode ? plan.gatherDuration / 700 : 1;
     const gatherDuration = exitDuration + plan.gatherDuration / queueSpeed;
     const orbitDuration = reducedMode ? 500 : 5100;
-    const absorbDuration = reducedMode ? 200 : 1900;
+    const absorbDuration = reducedMode ? 400 : 2400;
     let elapsed = 0, last = performance.now();
     this.finale?.setCompuvateSpinProgress(0);
     const orbit = now => {
       if (version !== this.version) return;
+      const bounds = this.screen.getBoundingClientRect();
+      if (Math.abs(bounds.width - plan.width) > .5 || Math.abs(bounds.height - plan.height) > .5) {
+        plan = createLampFormation({ width: bounds.width, height: bounds.height, rowCounts: rows });
+        slots.forEach(slot => Object.assign(slot.style, { width: `${plan.lampWidth}px`, height: `${plan.lampHeight}px` }));
+      }
+      // Fullscreen changes the canvas bounds independently of the source-image frame.
+      const canvasBounds = this.screen.querySelector('#finale-3d').getBoundingClientRect();
+      const layoutKey = `${bounds.left},${bounds.top},${bounds.width},${bounds.height},${canvasBounds.left},${canvasBounds.top},${canvasBounds.width},${canvasBounds.height}`;
+      if (layoutKey !== this.finaleLayoutKey) { this.finaleLayoutKey = layoutKey; alignFinaleLogo(); }
       const dt = Math.max(0, now - last); last = now;
       if (!this.paused) elapsed += dt;
       const orbitProgress = Math.max(0, elapsed - gatherDuration);
       const absorption = smooth((orbitProgress - orbitDuration) / absorbDuration);
       // Keep the lamps visible as they enter the emblem, then dissolve inside it.
-      const fade = smooth((absorption - .5) / .5);
+      const fade = smooth((absorption - .82) / .18);
       if (orbitProgress >= orbitDuration) this.screen.dataset.phase = 'finale-absorb';
       this.finale?.setCompuvateSpinProgress(orbitProgress / orbitDuration);
       slots.forEach((slot, index) => {
@@ -250,7 +286,11 @@ export class CeremonyMotion {
           sx = (bowls[index].width / plan.lampWidth) * (1 - exit) + exit;
           sy = (bowls[index].height / plan.lampHeight) * (1 - exit) + exit;
         } else {
-          const point = sampleLampFormation(plan, index, (elapsed - exitDuration) * queueSpeed);
+          const formationTime = (elapsed - exitDuration) * queueSpeed;
+          const mappedTime = formationTime <= initialGatherDuration
+            ? formationTime * plan.gatherDuration / initialGatherDuration
+            : plan.gatherDuration + formationTime - initialGatherDuration;
+          const point = sampleLampFormation(plan, index, mappedTime);
           // Contract the rotating circle into the logo; matching scale preserves spacing.
           const radialScale = 1 - absorption;
           x = plan.centerX + (point.x - plan.centerX) * radialScale;
@@ -258,16 +298,34 @@ export class CeremonyMotion {
           opacity = point.opacity * (1 - fade);
           sx = sy = radialScale;
         }
+        // Center resized bowls around the same viewport point, including fullscreen changes.
+        slot.style.left = `${center.x - plan.lampWidth / 2}px`;
+        slot.style.top = `${center.y - plan.lampHeight / 2}px`;
         slot.style.transform = `translate3d(${x - center.x}px,${y - center.y}px,0) scale(${sx},${sy})`;
         slot.style.opacity = String(opacity);
       });
       this.frame = requestAnimationFrame(orbit);
     };
     this.frame = requestAnimationFrame(orbit);
+    this.finaleResizeObserver?.disconnect();
+    this.finaleReflow = () => {
+      if (version !== this.version) return;
+      cancelAnimationFrame(this.frame);
+      orbit(performance.now());
+      this.boardRenderer.invalidate();
+    };
+    this.finaleResizeObserver = new ResizeObserver(this.finaleReflow);
+    window.addEventListener('resize', this.finaleReflow);
+    document.addEventListener('fullscreenchange', this.finaleReflow);
+    this.finaleResizeObserver.observe(this.screen);
+    this.finaleResizeObserver.observe(this.screen.querySelector('#finale-3d'));
     if (!await this.wait(gatherDuration + 40, version)) return;
     this.screen.dataset.phase = 'finale-orbit';
     this.animate(this.screen.querySelector('#finale-eyebrow'), [{ opacity: 0, letterSpacing: '.65em' }, { opacity: 1, letterSpacing: '.3em' }], { duration: 1400 });
     if (!await this.wait(orbitDuration + absorbDuration + 80, version)) return;
+    this.finaleResizeObserver.disconnect();
+    window.removeEventListener('resize', this.finaleReflow);
+    document.removeEventListener('fullscreenchange', this.finaleReflow);
     cancelAnimationFrame(this.frame);
     slots.forEach(slot => { slot.style.opacity = '0'; });
     this.boardRenderer.setTracking(false);
@@ -289,7 +347,7 @@ export class CeremonyMotion {
     this.animate(lead, [{ opacity: 0, transform: 'translateY(15px)', letterSpacing: '.6em' }, { opacity: 1, transform: 'translateY(0)', letterSpacing: '.3em' }], { delay: reduced() ? 0 : 900, duration: 1200 });
     this.announce(`Welcome to ${this.config.title || 'Problem Lab'}. All guests have lit their lamps.`);
     if (!await this.wait(reduced() ? 500 : 4300, version)) return;
-    this.boardRenderer.setPaused(true);
+    this.boardRenderer.setPaused(this.boardRenderer.isKovilStageRenderer ? this.paused : true);
     this.setBusy(false);
     this.screen.querySelector('#next-guest').textContent = '↻  REPLAY FINALE';
     this.screen.querySelector('#next-guest').disabled = false;

@@ -1,4 +1,6 @@
 import { CeremonyMotion } from './ceremony-motion.js';
+import { KovilStageRenderer } from './kovil-stage-renderer.js';
+import { KovilBackdrop } from './kovil-backdrop.js';
 
 (() => {
   'use strict';
@@ -11,7 +13,8 @@ import { CeremonyMotion } from './ceremony-motion.js';
   const GUEST_DISPLAY_MODES = {
     both: 'Photos, names & designations',
     'photos-only': 'Photos only — no names or designations',
-    'names-only': 'Names & designations — no photos'
+    'names-only': 'Names & designations — no photos',
+    'lamps-only': 'Lamps only — no guest photos, names or designations'
   };
   const OFFICIAL_PHOTOS = {
     'Professor Thilini De Silva': DEFAULT_PHOTO,
@@ -52,6 +55,7 @@ import { CeremonyMotion } from './ceremony-motion.js';
   const $$ = selector => Array.from(document.querySelectorAll(selector));
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   const totalLamps = () => state.rowCounts.reduce((sum, count) => sum + count, 0);
+  const ceremonyCount = () => state.guestDisplayMode === 'lamps-only' ? totalLamps() : state.guests.length;
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const safePhoto = value => String(value || '').startsWith('data:image/') || String(value || '').startsWith('assets/') ? value : '';
   const avatar = (photo, alt = '') => photo ? `<img src="${escapeHtml(safePhoto(photo))}" alt="${escapeHtml(alt)}">` : '<span class="avatar-placeholder" aria-label="No photo">♟</span>';
@@ -86,7 +90,7 @@ import { CeremonyMotion } from './ceremony-motion.js';
         flameVolume: clamp(Number(saved.flameVolume) || 70, 10, 100),
         lightIntensity: clamp(Number(saved.lightIntensity) || 80, 10, 100),
         lit: Array.from({ length: sum }, (_, index) => Boolean(saved.lit?.[index])),
-        current: clamp(Number(saved.current) || 0, 0, guests.length)
+        current: clamp(Number(saved.current) || 0, 0, saved.guestDisplayMode === 'lamps-only' ? sum : guests.length)
       };
     } catch { return fallback; }
   }
@@ -101,12 +105,23 @@ import { CeremonyMotion } from './ceremony-motion.js';
   let toastTimer = null;
   let rehearsalSnapshot = null;
   let presentationRequestPending = false;
+  const screen = $('#ceremony-screen');
+  const frame = $('#kovil-frame');
+  for (const element of [screen.querySelector('.ceremony-header'), screen.querySelector('.ceremony-main'), $('#status-board'), screen.querySelector('.ceremony-controls')]) frame.append(element);
+  const backdrop = new KovilBackdrop({ screen, frame, image: $('#kovil-backdrop-image'), canvas: $('#kovil-backdrop-patches') });
+  const stageRenderer = new KovilStageRenderer({ screen, frame, canvas: $('#kovil-canvas'), image: $('#kovil-backdrop-image'), board: $('#status-board') });
+  const restoreStage = document.createElement('button');
+  restoreStage.type = 'button'; restoreStage.className = 'button button-outline'; restoreStage.id = 'restore-approved-stage'; restoreStage.textContent = 'USE APPROVED STAGE';
+  $('#background-upload').parentElement.append(restoreStage);
+  restoreStage.addEventListener('click', () => { state.background = ''; state.backgroundName = ''; renderSetup(); saveState(); toast('Approved ceremony stage selected.'); });
+  screen.addEventListener('kovil-frame-resize', () => stageRenderer.invalidate());
   const motion = new CeremonyMotion({
     screen: $('#ceremony-screen'),
+    boardRenderer: stageRenderer,
     sendLamp: message => sendLampMessage('ceremony-lamp-3d', message),
     onBusy: busy => {
-      $('#ceremony-lamp-button').disabled = busy || motion?.paused || state.current >= state.guests.length || Boolean(state.lit[state.current]);
-      $('#next-guest').disabled = busy || motion?.paused || state.current >= state.guests.length || !state.lit[state.current];
+      $('#ceremony-lamp-button').disabled = busy || motion?.paused || state.current >= ceremonyCount() || Boolean(state.lit[state.current]);
+      $('#next-guest').disabled = busy || motion?.paused || state.current >= ceremonyCount() || !state.lit[state.current];
     }
   });
 
@@ -137,6 +152,9 @@ import { CeremonyMotion } from './ceremony-motion.js';
     $('#login-screen').hidden = name !== 'login';
     $('#setup-screen').hidden = name !== 'setup';
     $('#ceremony-screen').hidden = name !== 'ceremony';
+    if (name === 'ceremony') { clearTimeout(toastTimer); $('#toast').classList.remove('visible'); }
+    stageRenderer.setActive(name === 'ceremony');
+    if (name === 'ceremony') backdrop.resize();
     sendLampMessage('setup-lamp-3d', { type: 'pause', value: name !== 'setup' });
     sendLampMessage('ceremony-lamp-3d', { type: 'pause', value: name !== 'ceremony' || motion.paused });
     window.scrollTo(0, 0);
@@ -159,7 +177,7 @@ import { CeremonyMotion } from './ceremony-motion.js';
   function renderSetup() {
     $('#event-title').value = state.title;
     $('#title-font').value = state.titleFont;
-    $('#background-name').textContent = state.backgroundName || 'No image selected';
+    $('#background-name').textContent = state.backgroundName || 'Approved blue kovil stage';
     $('#flame-size').value = state.flameSize;
     $('#flame-volume').value = state.flameVolume;
     $('#light-intensity').value = state.lightIntensity;
@@ -183,6 +201,7 @@ import { CeremonyMotion } from './ceremony-motion.js';
     const wasActive = screen.classList.contains('presentation-mode');
     screen.classList.toggle('presentation-mode', active);
     screen.classList.toggle('presentation-fallback', active && fallback);
+    backdrop.setPresentation(active);
     screen.querySelector('.ceremony-controls').inert = active;
     screen.querySelector('.ceremony-tools').inert = active;
     $('#presentation-exit').hidden = !active || !fallback;
@@ -242,6 +261,7 @@ import { CeremonyMotion } from './ceremony-motion.js';
     sendLampMessage('ceremony-lamp-3d', config);
   }
   function sendLampMessage(id, message) {
+    if (id === 'ceremony-lamp-3d') { stageRenderer.handleMainMessage(message); return; }
     const frame = $('#' + id);
     if (frame?.contentWindow) frame.contentWindow.postMessage({ channel: 'compuvate-lamp-3d', ...message }, location.origin);
   }
@@ -381,17 +401,21 @@ import { CeremonyMotion } from './ceremony-motion.js';
 
   function renderCeremony(animateLamp = false) {
     const screen = $('#ceremony-screen');
-    const showNames = state.guestDisplayMode !== 'photos-only';
-    const showPhotos = state.guestDisplayMode !== 'names-only';
+    const lampsOnly = state.guestDisplayMode === 'lamps-only';
+    const showNames = !lampsOnly && state.guestDisplayMode !== 'photos-only';
+    const showPhotos = !lampsOnly && state.guestDisplayMode !== 'names-only';
     screen.dataset.guestDisplay = state.guestDisplayMode;
     $('#ceremony-title').textContent = state.title || 'DIGITAL OIL LAMP CEREMONY';
     setTitleFont();
+    backdrop.sync({ title: state.title, titleFont: state.titleFont, background: state.background }).catch(error => console.warn('Background could not be loaded.', error));
     if (state.background) { screen.style.setProperty('--event-background', `url("${state.background}")`); screen.classList.add('has-background'); }
     else { screen.classList.remove('has-background'); screen.style.removeProperty('--event-background'); }
-    const done = state.current >= state.guests.length;
+    const done = state.current >= ceremonyCount();
     const guest = state.guests[state.current];
+    screen.style.setProperty('--kovil-guest-name-size', `${Math.max(18, Math.min(26, 26 - Math.max(0, (guest?.name.length || 0) - 26) / 5))}px`);
+    screen.style.setProperty('--kovil-guest-designation-size', `${(guest?.designation.length || 0) > 90 ? 14 : 17}px`);
     const lit = !done && Boolean(state.lit[state.current]);
-    const count = Math.max(totalLamps(), state.guests.length);
+    const count = ceremonyCount();
     $('#ceremony-count').textContent = `${String(Math.min(state.current + 1, count)).padStart(2, '0')} / ${String(count).padStart(2, '0')}`;
     screen.classList.toggle('lamp-lit', lit);
     $('#ceremony-guest-name').textContent = showNames ? (done ? 'Ceremony Complete' : guest.name) : '';
@@ -414,15 +438,17 @@ import { CeremonyMotion } from './ceremony-motion.js';
       const waveDuration = (1.55 + (index % 9) * .13).toFixed(2);
       const waveDelay = (index * .29).toFixed(2);
       const waveDirection = index % 2 ? 'reverse' : 'normal';
-      const tokenVisible = Boolean(state.lit[index]) && !(animateLamp && index === state.current);
+      const tokenVisible = !lampsOnly && Boolean(state.lit[index]) && !(animateLamp && index === state.current);
       const initials = (person?.name || '').split(' ').filter(word => !/^(Ms\.|Mr\.|Dr\.|Professor|Senior|Lecturer)$/.test(word)).slice(0, 2).map(word => word[0]).join('');
-      const token = !showPhotos
+      const token = lampsOnly ? '' : !showPhotos
         ? `<span class="token-name">${escapeHtml(person?.name || `Guest ${index + 1}`)}</span>`
         : safePhoto(person?.photo)
           ? `<img src="${escapeHtml(safePhoto(person.photo))}" alt="${showNames ? escapeHtml(person.name) : `Guest ${index + 1} photo`}">`
           : showNames ? `<span class="token-initials">${escapeHtml(initials)}</span>` : '<span class="token-photo-placeholder" aria-label="Photo pending">♟</span>';
-      return `<div class="status-lamp ${state.lit[index] ? 'lit' : ''} ${index === state.current ? 'active' : ''}" data-index="${index}" title="${escapeHtml(showNames ? (person?.name || `Lamp ${index + 1}`) : `Lamp ${index + 1}`)}"><div class="guest-token ${tokenVisible ? 'token-visible' : ''}" data-guest-index="${index}">${token}</div><div class="status-bowl" data-lamp-index="${index}"><img src="${BOWL_IMAGE}" alt=""><span class="flame" style="--wave-duration:${waveDuration}s;--wave-delay:-${waveDelay}s;--wave-direction:${waveDirection}" aria-hidden="true"></span></div><strong>${String(index + 1).padStart(2, '0')}</strong><span class="name">${showNames ? escapeHtml(person?.name || 'Unassigned') : ''}</span></div>`;
+      const guestToken = lampsOnly ? '' : `<div class="guest-token ${tokenVisible ? 'token-visible' : ''}" data-guest-index="${index}">${token}</div>`;
+      return `<div class="status-lamp ${state.lit[index] ? 'lit' : ''} ${index === state.current ? 'active' : ''}" data-index="${index}" title="${escapeHtml(showNames ? (person?.name || `Lamp ${index + 1}`) : `Lamp ${index + 1}`)}">${guestToken}<div class="status-bowl" data-lamp-index="${index}"><img src="${BOWL_IMAGE}" alt=""><span class="flame" style="--wave-duration:${waveDuration}s;--wave-delay:-${waveDelay}s;--wave-direction:${waveDirection}" aria-hidden="true"></span></div><strong>${String(index + 1).padStart(2, '0')}</strong><span class="name">${showNames ? escapeHtml(person?.name || 'Unassigned') : ''}</span></div>`;
     }).join('')}</div>`).join('');
+    positionStepLamps();
     $('#next-guest').disabled = done || !state.lit[state.current];
     $('#previous-guest').disabled = state.current <= 0;
     $('#undo-lighting').disabled = !state.lit.some(Boolean);
@@ -430,10 +456,35 @@ import { CeremonyMotion } from './ceremony-motion.js';
     motion.sync({ lit: state.lit, rowCounts: state.rowCounts, flameSize: state.flameSize, flameVolume: state.flameVolume, lightIntensity: state.lightIntensity, title: state.title, guestDisplayMode: state.guestDisplayMode });
     sendLampMessage('ceremony-lamp-3d', animateLamp ? { type: 'ignite' } : { type: 'lit', value: !done && Boolean(state.lit[state.current]) });
   }
+  function positionStepLamps() {
+    const rowCount = state.rowCounts.length;
+    const dense = rowCount > 3;
+    $('#ceremony-screen').dataset.kovilDenseRows = String(dense);
+    const rowSpacing = rowCount === 1 ? 159 : 159 / (rowCount - 1);
+    const rowY = rowCount === 1 ? [717] : Array.from({ length: rowCount }, (_, i) => 640 + i * 159 / (rowCount - 1));
+    let index = 0;
+    state.rowCounts.forEach((count, row) => {
+      const perspective = rowCount === 1 ? .5 : row / (rowCount - 1);
+      const left = 446 - 26 * perspective, right = 1222.5 + 28 * perspective;
+      const spacing = count === 1 ? 800 : (right - left) / (count - 1);
+      const denseLimit = dense ? (rowSpacing - (state.guestDisplayMode === 'lamps-only' ? 6 : 16)) / .53 : Infinity;
+      const width = Math.min(57 + 5 * perspective, spacing * .68, denseLimit);
+      for (let column = 0; column < count; column++) {
+        const slot = $(`.status-lamp[data-index="${index++}"]`);
+        slot.style.setProperty('--lamp-x', String(count === 1 ? 835.5 : left + column * spacing));
+        slot.style.setProperty('--lamp-y', String(rowY[row]));
+        slot.style.setProperty('--lamp-width', String(width));
+        slot.style.setProperty('--lamp-height', String(width * .53));
+        slot.style.setProperty('--token-width', String(Math.min(38, spacing * .55, dense ? rowSpacing - width * .53 - 3 : Infinity)));
+      }
+    });
+    $('#status-board').setAttribute('aria-label', `${totalLamps()} lamps in ${rowCount} rows on the ceremony steps`);
+    stageRenderer.invalidate();
+  }
   function generateCeremony() {
     restoreRehearsal();
     if (!state.title.trim()) { toast('Enter an event title.', true); $('#event-title').focus(); return; }
-    if (state.guests.length !== totalLamps()) {
+    if (state.guestDisplayMode !== 'lamps-only' && state.guests.length !== totalLamps()) {
       const difference = totalLamps() - state.guests.length;
       toast(difference > 0 ? `Add ${difference} guest${difference === 1 ? '' : 's'} to match the lamps.` : `Remove ${-difference} guest${difference === -1 ? '' : 's'} or add more lamps.`, true);
       return;
@@ -484,7 +535,7 @@ import { CeremonyMotion } from './ceremony-motion.js';
   $('#setup-lamp-3d').addEventListener('load', () => { renderFlameControls(); sendLampMessage('setup-lamp-3d', { type: 'pause', value: $('#setup-screen').hidden }); });
   $('#ceremony-lamp-3d').addEventListener('load', () => {
     renderFlameControls();
-    sendLampMessage('ceremony-lamp-3d', { type: 'lit', value: state.current < state.guests.length && Boolean(state.lit[state.current]) });
+    sendLampMessage('ceremony-lamp-3d', { type: 'lit', value: state.current < ceremonyCount() && Boolean(state.lit[state.current]) });
     sendLampMessage('ceremony-lamp-3d', { type: 'pause', value: $('#ceremony-screen').hidden || motion.paused });
   });
   window.addEventListener('message', event => {
@@ -557,33 +608,34 @@ import { CeremonyMotion } from './ceremony-motion.js';
   $('#confirm-accept').addEventListener('click', () => { $('#confirm-dialog').close(); const callback = confirmCallback; confirmCallback = null; if (callback) callback(); });
 
   $('#ceremony-lamp-button').addEventListener('click', () => {
-    if (motion.busy || motion.paused || state.current >= state.guests.length || state.lit[state.current]) return;
+    if (motion.busy || motion.paused || state.current >= ceremonyCount() || state.lit[state.current]) return;
     const index = state.current;
     const guest = state.guests[index];
     state.lit[state.current] = true;
     saveState();
     renderCeremony(true);
     motion.lightGuest({
-      index, guest, last: index === state.guests.length - 1,
+      index, guest, last: index === ceremonyCount() - 1,
       onAdvance: () => { state.current = index + 1; saveState(); renderCeremony(); },
-      onComplete: () => { state.current = state.guests.length; saveState(); }
+      onComplete: () => { state.current = ceremonyCount(); saveState(); }
     });
   });
   $('#next-guest').addEventListener('click', () => {
     if (motion.busy || motion.paused) return;
-    if (state.current >= state.guests.length) {
-      motion.cancel(); state.current = state.guests.length - 1; renderCeremony(); state.current = state.guests.length;
+    if (state.current >= ceremonyCount()) {
+      motion.cancel(); state.current = ceremonyCount() - 1; renderCeremony(); state.current = ceremonyCount();
       motion.runFinale(); return;
     }
     if (state.lit[state.current]) {
       state.current++; saveState();
-      if (state.current >= state.guests.length) motion.runFinale(); else renderCeremony();
+      if (state.current >= ceremonyCount()) motion.runFinale(); else renderCeremony();
     }
   });
+  $('#operator-next').addEventListener('click', () => $('#next-guest').click());
   $('#previous-guest').addEventListener('click', () => { if (state.current > 0) { motion.cancel(); restoreRehearsal(); state.current = Math.max(0, state.current - 1); saveState(); renderCeremony(); } });
   $('#undo-lighting').addEventListener('click', () => {
     motion.cancel();
-    if (restoreRehearsal()) { renderCeremony(); toast('Finale preview closed.'); return; }
+    if (restoreRehearsal()) { renderCeremony(); toast('Finale closed.'); return; }
     const index = state.lit.findLastIndex(Boolean);
     if (index >= 0) { state.lit[index] = false; state.current = index; saveState(); renderCeremony(); toast('Last lighting undone.'); }
   });
@@ -591,21 +643,24 @@ import { CeremonyMotion } from './ceremony-motion.js';
     motion.cancel(); restoreRehearsal(); state.lit = Array(totalLamps()).fill(false); state.current = 0; saveState(); renderCeremony(); toast('Ceremony reset.');
   }));
   $('#back-to-setup').addEventListener('click', () => { motion.cancel(); restoreRehearsal(); renderSetup(); showScreen('setup'); });
-  $('#preview-finale').addEventListener('click', () => {
+  function startImmediateFinale(preview = false) {
     motion.cancel(); restoreRehearsal();
     rehearsalSnapshot = { current: state.current, lit: [...state.lit] };
-    state.lit = Array(totalLamps()).fill(true); state.current = state.guests.length - 1; renderCeremony();
-    state.current = state.guests.length;
-    $('#ceremony-screen').classList.add('rehearsal');
-    $('#undo-lighting').textContent = '↶  EXIT PREVIEW';
+    state.lit = Array(totalLamps()).fill(true); state.current = ceremonyCount() - 1; renderCeremony();
+    state.current = ceremonyCount();
+    $('#ceremony-screen').classList.toggle('rehearsal', preview);
+    $('#undo-lighting').textContent = preview ? '↶  EXIT PREVIEW' : '↶  EXIT FINALE';
     motion.runFinale();
-  });
+  }
+  $('#preview-finale').addEventListener('click', () => startImmediateFinale(true));
   $('#pause-ceremony').addEventListener('click', () => {
     motion.setPaused(!motion.paused);
-    $('#ceremony-lamp-button').disabled = motion.busy || motion.paused || state.current >= state.guests.length || Boolean(state.lit[state.current]);
-    $('#next-guest').disabled = motion.busy || motion.paused || (state.current < state.guests.length && !state.lit[state.current]);
+    $('#ceremony-lamp-button').disabled = motion.busy || motion.paused || state.current >= ceremonyCount() || Boolean(state.lit[state.current]);
+    $('#next-guest').disabled = motion.busy || motion.paused || (state.current < ceremonyCount() && !state.lit[state.current]);
   });
   $('#ceremony-tools-toggle').addEventListener('click', () => {
+    $('#operator-next').disabled = $('#next-guest').disabled;
+    $('#operator-next').textContent = state.current >= ceremonyCount() ? 'REPLAY FINALE' : 'NEXT GUEST';
     const menu = $('#ceremony-tools-menu');
     menu.hidden = !menu.hidden;
     $('#ceremony-tools-toggle').setAttribute('aria-expanded', String(!menu.hidden));
@@ -632,8 +687,15 @@ import { CeremonyMotion } from './ceremony-motion.js';
       }
     }
     if ($('#ceremony-screen').hidden || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-    if (event.key === ' ' || event.key === 'Enter') {
-      if (document.activeElement !== document.body && document.activeElement !== $('#ceremony-lamp-button')) return;
+    if (event.code === 'Space' || event.key === ' ') {
+      if (document.querySelector('dialog[open]') || document.activeElement.isContentEditable) return;
+      event.preventDefault();
+      if (event.repeat || $('#ceremony-screen').dataset.phase?.startsWith('finale-')) return;
+      startImmediateFinale();
+      return;
+    }
+    if (event.key === 'Enter') {
+      if (document.activeElement !== document.body && document.activeElement !== $('#ceremony-lamp-button') && document.activeElement !== $('#ceremony-screen')) return;
       event.preventDefault(); $('#ceremony-lamp-button').click();
     }
     if (event.key === 'ArrowRight') $('#next-guest').click();
@@ -641,6 +703,7 @@ import { CeremonyMotion } from './ceremony-motion.js';
   });
 
   renderSetup();
+  window.__kovilIntegration = Object.freeze({ get state() { return structuredClone(state); }, motion, stageRenderer, backdrop });
   let signedIn = false;
   try { signedIn = sessionStorage.getItem('compuvate-login') === 'yes'; } catch { /* Require login when storage is unavailable. */ }
   showScreen(signedIn ? 'setup' : 'login');

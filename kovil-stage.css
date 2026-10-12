@@ -1,0 +1,422 @@
+/* Canonical source-image coordinates; the frame scales as a complete scene. */
+.ceremony-screen.kovil-scene,
+.ceremony-screen.kovil-scene:fullscreen {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: #020c18;
+  background-image: none;
+  text-align: center;
+}
+.ceremony-screen.kovil-scene[hidden] { display: none; }
+.ceremony-screen.kovil-scene::before,
+.ceremony-screen.kovil-scene::after { content: none; display: none; }
+.ceremony-screen.kovil-scene:fullscreen::backdrop { background: #020c18; }
+.kovil-scene #kovil-frame {
+  position: absolute;
+  width: 1672px;
+  height: 941px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(var(--kovil-scale, 1));
+  transform-origin: center;
+  pointer-events: none;
+}
+.kovil-scene #kovil-backdrop-image,
+.kovil-scene #kovil-backdrop-patches {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 1672px;
+  height: 941px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  object-fit: contain;
+  object-position: center;
+  filter: none;
+  pointer-events: none;
+}
+.kovil-scene #kovil-backdrop-image { z-index: 0; }
+.kovil-scene #kovil-backdrop-patches { z-index: 1; }
+.kovil-scene #kovil-backdrop-image,
+.kovil-scene #kovil-backdrop-patches { transition: opacity 700ms ease; }
+.kovil-scene.finale-running #kovil-backdrop-image,
+.kovil-scene.finale-running #kovil-backdrop-patches { opacity: 0; }
+.ceremony-screen.kovil-scene > #kovil-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+.kovil-scene .ceremony-header {
+  position: absolute;
+  inset: 0;
+  display: block;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.kovil-scene .ceremony-brand,
+.kovil-scene .ceremony-heading > p,
+.kovil-scene .ceremony-subtitle { display: none; }
+.kovil-scene .ceremony-heading {
+  position: absolute;
+  left: 547px;
+  top: 40px;
+  width: 572px;
+  height: 67px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.kovil-scene .ceremony-heading h1 {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  line-height: 1;
+  font-size: var(--kovil-title-size, 68px);
+  color: #e5f6ff;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+  text-shadow: 0 2px 7px #001123;
+  overflow: visible;
+}
+.kovil-scene[data-kovil-baked-title='true'] #ceremony-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.kovil-scene .ceremony-main {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.kovil-scene .guest-spotlight {
+  position: absolute;
+  left: 205px;
+  top: 286px;
+  width: 245px;
+  height: 303px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  grid-area: auto;
+}
+.kovil-scene .guest-spotlight .portrait-frame {
+  position: relative;
+  flex: none;
+  width: 220px;
+  height: 238px;
+  margin: 0;
+  border: 2px solid #88dced;
+  border-radius: 14px;
+  background: #0c2336;
+  box-shadow: 0 0 0 2px #173e55, 0 0 24px #51caff40;
+}
+.kovil-scene .portrait-frame img { width: 100%; height: 100%; object-fit: cover; object-position: center 24%; border-radius: 11px; }
+.kovil-scene #ceremony-photo-placeholder { font-size: 14px; }
+.kovil-scene .guest-nameplate {
+  position: absolute;
+  top: 247px;
+  left: -25px;
+  width: 295px;
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.kovil-scene .guest-spotlight h2 {
+  margin: 0 0 4px;
+  max-width: 100%;
+  color: #e0f4ff;
+  font: 600 var(--kovil-guest-name-size, 26px)/1.12 Georgia, serif;
+  text-shadow: 0 2px 7px #000;
+  overflow-wrap: anywhere;
+}
+.kovil-scene .guest-spotlight p {
+  margin: 0 auto;
+  max-width: 100%;
+  color: #bfddeb;
+  font: 500 var(--kovil-guest-designation-size, 17px)/1.2 'Segoe UI', Arial, sans-serif;
+  text-shadow: 0 2px 6px #001021;
+}
+.kovil-scene[data-guest-display='names-only'] .guest-nameplate {
+  top: 83px;
+  left: -17px;
+  width: 280px;
+  padding: 22px 16px;
+  border: 1px solid #6fbed166;
+  border-radius: 14px;
+  background: linear-gradient(140deg, #123750e3, #071b30e8);
+  box-shadow: 0 0 22px #43bfd522;
+}
+.kovil-scene[data-guest-display='names-only'] .guest-nameplate h2 { margin-bottom: 9px; font-size: 28px; }
+.kovil-scene[data-guest-display='names-only'] .guest-nameplate p { font-size: 18px; }
+.kovil-scene[data-guest-display='lamps-only'] .guest-spotlight { display: none; }
+.kovil-scene .ceremony-lamp-stage,
+.kovil-scene[data-guest-display='lamps-only'] .ceremony-lamp-stage {
+  position: absolute;
+  left: 700px;
+  top: 342px;
+  width: 260px;
+  height: 170px;
+  min-height: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  grid-area: auto;
+}
+.kovil-scene .ceremony-lamp-arc,
+.kovil-scene .ceremony-pedestal { display: none; }
+.kovil-scene #ceremony-lamp-button {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  display: block;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  filter: none;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.kovil-scene #ceremony-lamp-button:not(:disabled):hover { background: transparent; transform: none; filter: none; box-shadow: none; }
+.kovil-scene #ceremony-lamp-button:focus-visible { outline: 3px solid #a5eaff; outline-offset: 8px; }
+.kovil-scene .ceremony-bowl { width: 100%; height: 100%; }
+.kovil-scene #ceremony-lamp-3d { visibility: hidden; pointer-events: none; }
+.kovil-scene .ceremony-progress,
+.kovil-scene[data-guest-display='lamps-only'] .ceremony-progress {
+  position: absolute;
+  left: 697px;
+  top: 532px;
+  width: 281px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  grid-area: auto;
+}
+.kovil-scene .ceremony-progress > span,
+.kovil-scene .ceremony-progress > strong,
+.kovil-scene .ceremony-progress .progress-rule { display: none; }
+.kovil-scene #ceremony-hint {
+  width: 100%;
+  margin: 0;
+  padding: 0 4px;
+  color: #e3f3ff;
+  font: 500 20px/1.2 Georgia, serif;
+  text-shadow: 0 2px 5px #00101d;
+}
+.kovil-scene #ceremony-hint span:last-child { font-size: 15px; margin-top: 3px; }
+.kovil-scene .status-board {
+  position: absolute;
+  inset: 0;
+  width: 1672px;
+  height: 941px;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  display: block;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 5;
+}
+.kovil-scene .status-grid { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.kovil-scene .status-row { position: absolute; inset: 0; display: contents; margin: 0; padding: 0; min-height: 0; gap: 0; }
+.kovil-scene .status-lamp {
+  position: absolute;
+  left: calc(var(--lamp-x, 835) * 1px);
+  top: calc(var(--lamp-y, 640) * 1px);
+  width: calc(var(--lamp-width, 59) * 1px);
+  height: 0;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  display: block;
+  transform: translateX(-50%);
+  overflow: visible;
+  pointer-events: none;
+}
+.kovil-scene .status-bowl {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  top: auto;
+  width: 100%;
+  height: calc(var(--lamp-height, 31) * 1px);
+  max-width: none;
+  margin: 0;
+  display: block;
+  transform: none;
+  filter: none;
+}
+.kovil-scene .status-bowl img,
+.kovil-scene .status-bowl .flame,
+.kovil-scene #status-lamp-canvas,
+.kovil-scene .status-lamp.active .status-bowl::before { visibility: hidden; }
+.kovil-scene .status-lamp strong {
+  position: absolute;
+  top: 10px;
+  left: -20px;
+  width: calc(100% + 40px);
+  margin: 0;
+  padding: 0;
+  color: #dcf3ff;
+  font: 600 16px/1 'Segoe UI', Arial, sans-serif;
+  letter-spacing: .02em;
+  overflow: visible;
+  text-shadow: 0 1px 4px #001b2a;
+}
+.kovil-scene .status-lamp.lit strong { color: #ffdfa0; }
+.kovil-scene .status-lamp.active strong { color: #baf4ff; }
+.kovil-scene .status-lamp .name { display: none; }
+.kovil-scene .guest-token {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--lamp-height, 31) * 1px + 9px);
+  width: calc(var(--token-width, 38) * 1px);
+  height: calc(var(--token-width, 38) * 1px);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  transform: translateX(-50%);
+  border: 1px solid #93dceb;
+  border-radius: 7px;
+  background: #0a263a;
+}
+.kovil-scene[data-guest-display='names-only'] .guest-token { width: min(138px, calc(var(--token-width, 138) * 1px)); height: auto; padding: 3px 5px; border-radius: 5px; }
+.kovil-scene[data-guest-display='names-only'] .guest-token .token-name { font-size: 12px; line-height: 1.2; }
+.kovil-scene .ceremony-controls {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 12;
+  pointer-events: none;
+}
+.kovil-scene .ceremony-controls button {
+  position: absolute;
+  top: 861px;
+  width: 197px;
+  height: 58px;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #79d5e8;
+  border-radius: 100px;
+  color: #e4f3ff;
+  background: linear-gradient(#0a2b45eb, #031324f5);
+  box-shadow: 0 0 10px #5ce2ff1a;
+  font: 700 16px/1 'Segoe UI', Arial, sans-serif;
+  letter-spacing: .035em;
+  white-space: nowrap;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.kovil-scene .ceremony-controls button::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, calc(44px / var(--kovil-scale, 1)));
+  height: max(100%, calc(44px / var(--kovil-scale, 1)));
+  transform: translate(-50%, -50%);
+  border-radius: inherit;
+}
+.kovil-scene .ceremony-controls button:hover:not(:disabled) { background: linear-gradient(#12425ced, #08263cf5); filter: none; }
+.kovil-scene .ceremony-controls button:focus-visible { outline: 3px solid #b2f2ff; outline-offset: 4px; }
+.kovil-scene .ceremony-controls button:disabled { opacity: .42; }
+.kovil-scene #previous-guest { left: 423px; width: 197px; }
+.kovil-scene #undo-lighting { left: 640px; width: 174px; }
+.kovil-scene #pause-ceremony { left: 834px; width: 185px; }
+.kovil-scene #presentation-fullscreen { left: 1039px; width: 209px; min-width: 0; background: linear-gradient(#0a2b45eb, #031324f5); }
+.kovil-scene #next-guest { display: none; }
+.kovil-scene.finale-welcome #next-guest { display: inline-flex; left: 423px; width: 197px; }
+.kovil-scene .ceremony-tools { position: absolute; right: 16px; top: 15px; z-index: 30; pointer-events: auto; }
+.kovil-scene #ceremony-tools-toggle { color: #d7f2ff; border: 1px solid #69b7d866; background: #092438e8; }
+.kovil-scene #presentation-exit { z-index: 50; }
+
+/* During formation, motion places the status board directly in viewport space. */
+.ceremony-screen.kovil-scene.finale-running .status-board { inset: 0; width: 100%; height: 100%; padding: 0; margin: 0; z-index: 5; }
+.ceremony-screen.kovil-scene.finale-running .status-grid,
+.ceremony-screen.kovil-scene.finale-running .status-row { display: contents; position: static; width: auto; height: auto; }
+.ceremony-screen.kovil-scene.finale-running .status-lamp { left: 0; top: 0; width: 0; height: 0; transform: none; display: block; }
+.ceremony-screen.kovil-scene.finale-running .status-bowl { left: 0; top: 0; bottom: auto; width: 100%; height: 100%; transform: none; }
+.ceremony-screen.kovil-scene.finale-running .status-lamp strong,
+.ceremony-screen.kovil-scene.finale-running .guest-token { display: none; }
+.ceremony-screen.kovil-scene.finale-running .ceremony-controls { position: absolute; inset: 0; padding: 0; }
+.kovil-scene.presentation-mode .ceremony-controls,
+.kovil-scene.presentation-mode .ceremony-tools { visibility: hidden; pointer-events: none; }
+.kovil-scene.presentation-mode .ceremony-controls button { pointer-events: none; }
+.kovil-scene .finale-aura { background: none; filter: none; }
+
+/* Extra configured rows keep a readable number beside each smaller lamp. */
+.kovil-scene[data-kovil-dense-rows='true'] .status-lamp strong {
+  top: calc(var(--lamp-height, 20) * -0.5px - 5.5px);
+  left: calc(100% + 5px);
+  width: 22px;
+  font-size: 11px;
+}
+.kovil-scene[data-kovil-dense-rows='true'] .guest-token { bottom: calc(var(--lamp-height, 20) * 1px + 3px); }
+.kovil-scene[data-kovil-dense-rows='true'][data-guest-display='names-only'] .guest-token { width: 104px; height: calc(var(--token-width, 13) * 1px); padding: 1px 3px; }
+.kovil-scene[data-kovil-dense-rows='true'][data-guest-display='names-only'] .guest-token .token-name { display: block; white-space: nowrap; text-overflow: ellipsis; font-size: 9px; line-height: 1.1; }
+
+.kovil-scene.finale-welcome[data-motion-busy='true'] #next-guest { display: none; }
+.kovil-scene:not([data-stage-ready='true']) .status-bowl img { visibility: visible; }
+.kovil-scene:not([data-stage-ready='true']) .status-lamp.lit .status-bowl .flame { visibility: visible; }
+.kovil-scene:not([data-stage-ready='true']) #ceremony-lamp-button::before { content: ''; position: absolute; inset: 0; background: url('assets/gold-oil-bowl.png') center bottom / 100% auto no-repeat; pointer-events: none; }

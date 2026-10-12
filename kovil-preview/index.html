@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#031020">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><path fill=%22%2353cdf2%22 d=%22M4 18h24c-2 8-6 11-12 11S6 26 4 18Z%22/></svg>">
+  <title>Digital Oil Lamp · Approved Stage Preview</title>
+  <link rel="stylesheet" href="preview.css">
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <main id="stage" class="stage" aria-label="Problem Lab digital oil lamp stage">
+    <img id="backdrop" class="backdrop" src="assets/kovil-background.png" alt="CompuVate Association Problem Lab 1.0 ceremony, with scroll flags, a blue illuminated pavilion, trees and fifteen oil lamps on three steps" draggable="false">
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <button id="main-lamp" class="lamp-hotspot" type="button" aria-label="Touch to light the main lamp and the next step lamp"></button>
+    <div id="step-hotspots" aria-label="Step lamps"></div>
+    <nav class="controls" aria-label="Ceremony preview controls">
+      <button id="previous" type="button" aria-label="Previous lamp">PREVIOUS</button>
+      <button id="undo" type="button" aria-label="Undo the latest lamp lighting">UNDO</button>
+      <button id="pause" type="button" aria-label="Pause flag and flame motion" aria-pressed="false">PAUSE</button>
+      <button id="fullscreen" type="button" aria-label="Enter fullscreen; press Escape to return">FULLSCREEN</button>
+    </nav>
+    <div id="loading" role="status"><span></span>Preparing flags and lamps…</div>
+  </main>
+  <p id="status" class="sr-only" role="status" aria-live="polite">The exact approved background. Touch the main lamp to continue.</p>
+</body>
+</html>
