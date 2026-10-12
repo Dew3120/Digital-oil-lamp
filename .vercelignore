@@ -1,0 +1,11 @@
+.git
+.vercel
+.env*
+runtime
+node_modules
+server.js
+*.exe
+*.zip
+*.log
+*.tmp
+*.bak

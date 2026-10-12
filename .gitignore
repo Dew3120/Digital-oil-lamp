@@ -1,4 +1,5 @@
 /runtime/
+/.vercel/
 *.exe
 *.zip
 node_modules/
@@ -7,3 +8,6 @@ node_modules/
 *.bak
 .DS_Store
 Thumbs.db
+
+.vercel
+.env*
