@@ -1,0 +1,157 @@
+/* Navy, ice blue and cyan interface. The lamp's brass and fire retain their
+   physical materials; photographs and official brand artwork remain intact. */
+:root {
+  --navy: #071b31;
+  --navy-dark: #030e20;
+  --navy-card: #0c233d;
+  --gold: #74bddd;
+  --gold-bright: #c8e8f8;
+  --gold-deep: #327497;
+  --text: #e6f2fb;
+  --muted: #8eaec6;
+  --blue: #39b9ed;
+  --ice: #c8e8f8;
+  --cyan: #4ad8e6;
+  --line: #416a86;
+  --line-soft: #2b4b65;
+  --focus-glow: #4acaff38;
+  scrollbar-color: #4b829e #091c31;
+}
+.screen {
+  background: radial-gradient(ellipse at 52% 32%, #143554 0%, #0a213a 40%, #041328 76%, #020c1d 100%);
+}
+.screen::before { opacity: .22; }
+.screen::after { opacity: .13; }
+.gold-card {
+  border-color: #6bb4d0;
+  background: linear-gradient(130deg, #153553dd, #091e36ee 38%, #06152beb);
+  box-shadow: 0 0 24px #36b5e51b, inset 0 1px #cff3ff14, inset 0 0 28px #021126;
+}
+.button:hover { box-shadow: 0 0 19px #45c2f043; }
+.button-primary {
+  color: #041b2e;
+  border-color: #a9e9fb;
+  background: linear-gradient(180deg, #c3edfa, #75cbe8 48%, #369ec7);
+  box-shadow: inset 0 1px #e6fbff, 0 0 18px #44bde63d;
+}
+.button-secondary, .button-outline {
+  color: #c8e8f8;
+  border-color: #578ba8;
+  background: linear-gradient(#102c46, #071b32);
+}
+.button:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline-color: #67dce9;
+}
+input, select { color: #e6f2fb; background: #071b30; border-color: #497996; }
+input::placeholder { color: #809fb9; }
+select option { color: #c8e8f8; background: #081a30; }
+.input-icon-wrap { background: #071b31; border-color: #609cb9; }
+.input-icon-wrap:focus-within { border-color: #99e6f3; box-shadow: 0 0 14px #4bc3ea49; }
+.input-icon-wrap span { color: #8ed7ec; border-right-color: #3c6884; }
+.login-card h1, .header-app-name, .login-footer, .app-footer,
+.setup-section h2, .preview-card h2, .modal-head h2,
+.gold-divider, .order-handle, .order-number { color: #c8e8f8; }
+.association-wordmark { color: #e3f3fb; text-shadow: 0 0 12px #93d8ec25; }
+.association-tagline { color: #9cbdd3; }
+.association-emblem, .header-compuvate, .ceremony-compuvate { box-shadow: 0 0 18px #69c5ed2b; }
+.gold-divider::before, .gold-divider::after { background: linear-gradient(90deg, transparent, #6da9c5); }
+.login-subtitle, .field-label, .header-right > span { color: #d6eaf7; }
+.circuit { border-color: #287ea9; filter: drop-shadow(0 0 4px #31b5d9); }
+.app-header { border-bottom-color: #375c78; }
+.header-rule { background: #6babc7; }
+.setup-section { border-bottom-color: #365a74; }
+#event-title { color: #c8e8f8; }
+.file-control span { border-color: #497996; background: #071b30; color: #aecbdd; }
+.stepper { border-color: #6299b5; background: #07192d; }
+.stepper button, .range-control button {
+  color: #dff6ff;
+  background: linear-gradient(#347899, #18455f);
+  box-shadow: inset 0 1px #d6f4ff26;
+}
+.stepper button:hover, .range-control button:hover { background: linear-gradient(#428eaf, #225b78); }
+.layout-editor { border-color: #355e79; background: #071b3029; }
+.mini-layout-wrap { border-left-color: #416a86; }
+.guest-table-scroll { border-color: #365a76; }
+.guest-table th { color: #c8e8f8; background: #16334d; }
+.guest-table td { border-top-color: #2d4b64; }
+.guest-table tr:hover td { background: #21496655; }
+.dots-button { color: #d7edf8; }
+.dots-button:hover, .dots-button[aria-expanded='true'] { border-color: #6bb4d0; background: #29617f44; }
+.preview-stage { border-bottom-color: #426a85; background: #04142a; }
+.range-label { color: #d6eaf7; }
+.range-control button { border-color: #6299b5; }
+.range-control input[type='range'] { accent-color: #79cce6; border-color: #426b84; background: #081c32; }
+.modal {
+  border-color: #6cb9d2;
+  background: linear-gradient(140deg, #12314d, #07192f 78%);
+  box-shadow: 0 0 30px #44b7dc2e, 0 25px 70px #000b;
+}
+.modal-head, .modal-actions { border-color: #416a86; }
+.close-button { color: #aee5f4; border-color: #6099b5; }
+.photo-preview { border-color: #6099b5; background: #0d2942; }
+.order-list { border-color: #41627e; }
+.order-item { border-bottom-color: #2b4b65; background: #081e35; }
+.order-item:first-child { background: #2457763d; }
+.order-item button { color: #c8e8f8; border-color: #6099b5; background: #102f48; }
+.guest-menu { border-color: #6cb9d2; background: #071c31f5; }
+.guest-menu button { color: #d6eaf7; }
+.guest-menu button:hover { background: #234b66; }
+.toast { border-color: #68cedc; background: #0d3544; box-shadow: 0 0 22px #38b9d333; color: #e0f7fc; }
+/* Destructive actions and errors keep an accessible, distinct warning color. */
+.guest-menu button.danger { color: #ffa0aa; border-top-color: #42516a; }
+.toast.error { border-color: #df8a98; background: #3c2333; }
+
+.ceremony-screen {
+  background: radial-gradient(ellipse at 52% 31%, #143654 0%, #0a2139 40%, #041327 74%, #020c1d 100%);
+}
+.ceremony-screen.has-background { background-image: linear-gradient(#071b31b5, #031126cf), var(--event-background); }
+.ceremony-screen::before {
+  background-image:
+    linear-gradient(45deg, transparent 0 34%, #419fd0 34.1% 34.25%, transparent 34.35%),
+    linear-gradient(135deg, transparent 0 34%, #419fd0 34.1% 34.25%, transparent 34.35%),
+    linear-gradient(45deg, transparent 0 49%, #59bacd 49.1% 49.25%, transparent 49.35%),
+    linear-gradient(135deg, transparent 0 49%, #59bacd 49.1% 49.25%, transparent 49.35%);
+}
+.ceremony-header .ceremony-heading p { color: #93c4dc; }
+.ceremony-header h1, .ceremony-heading h1 {
+  color: #c8e8f8;
+  text-shadow: 0 2px 0 #254964, 0 4px 22px #68b8df30;
+}
+.ceremony-subtitle { color: #b9d7e9; }
+.ceremony-subtitle::before, .ceremony-subtitle::after { background: #6daac6; }
+#ceremony-tools-toggle { color: #acd8ec; background: #123450dd; }
+#ceremony-tools-menu { border-color: #629ab5; background: #071b30; }
+#ceremony-tools-menu button { color: #d6eaf7; }
+#ceremony-tools-menu button:hover { background: #204964; }
+.portrait-frame {
+  border-color: #a4dded;
+  background: linear-gradient(#284a65, #0a2139);
+  box-shadow: 0 0 0 3px #356a88, 0 0 36px #61c6e62d;
+}
+.guest-spotlight h2 { color: #e5f3fb; text-shadow: 0 2px 6px #0008; }
+.guest-spotlight p { color: #a3cce1; }
+.ceremony-lamp-arc { border-color: #6aaac799; box-shadow: 0 -9px 26px -17px #aae7f4; }
+.ceremony-pedestal { border-color: #6298b188; background: linear-gradient(#29445b, #081a2d); box-shadow: 0 -11px 36px #77cae521, 0 16px 22px #0009; }
+.ceremony-pedestal::before { border-color: #6daac6; background: radial-gradient(ellipse, #40688077, #213e53 50%, #172d42 74%); }
+.ceremony-progress strong { color: #c8e8f8; }
+.progress-rule { color: #8bd2e6; }
+.progress-rule::before, .progress-rule::after { background: #497d98; }
+.ceremony-screen.lamp-lit #ceremony-hint span:first-child { color: #75dce8; }
+#ceremony-hint span:last-child { color: #98bad1; }
+.status-board { border-color: #53849e99; background: linear-gradient(130deg, #0b263bd9, #06172bdb); box-shadow: inset 0 1px #d8f2fb1c, 0 18px 45px #0005; }
+.status-lamp strong { color: #7096b3; }
+.status-lamp.lit strong, .status-lamp.active strong { color: #bee7f5; }
+.status-lamp.active .status-bowl::before { border-color: #86cadc66; box-shadow: 0 0 15px #4acbe633; }
+.guest-token { border-color: #84cde3; background: #102e46; box-shadow: 0 0 11px #56b4d333; }
+.ceremony-controls button { color: #d9eff9; border-color: #538cab88; background: linear-gradient(#183e59, #091e34); box-shadow: 0 0 0 1px #75d3ec11; }
+.ceremony-controls #next-guest { color: #e5faff; background: linear-gradient(#267493, #104257); border-color: #78cadc; box-shadow: 0 0 18px #4abedb33; }
+.ceremony-controls #pause-ceremony { color: #b4e4f3; }
+.portrait-flight { border-color: #b1e3f0; box-shadow: 0 0 30px #55c6ff44, 0 0 4px #84d6ed; background: #102d46; }
+.finale-aura { background: radial-gradient(ellipse, #15466b65 0, #12385640 28%, transparent 70%); }
+#finale-logo-fallback { box-shadow: 0 0 70px #52b4e344; }
+#finale-eyebrow { color: #85b8d2; }
+.welcome-lead { color: #bcdfef; }
+.welcome-title { color: #c8e8f8; text-shadow: 0 0 30px #59b0ce33; }
+.finale-tagline { color: #789bb7; }
+.finale-tagline span { color: #58d1dc; }
+.finale-running .status-board { background: transparent; box-shadow: none; border: 0; }

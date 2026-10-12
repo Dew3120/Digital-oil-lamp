@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#04142c">
+  <title>Digital Oil Lamp 0.1 · CompuVate</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="ceremony-final.css">
+  <link rel="stylesheet" href="ceremony-motion.css">
+  <link rel="stylesheet" href="cool-palette.css">
+  <link rel="stylesheet" href="display-options.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <section class="screen login-screen" id="login-screen" aria-labelledby="login-title">
+    <div class="circuit circuit-left" aria-hidden="true"></div>
+    <div class="circuit circuit-right" aria-hidden="true"></div>
+    <div class="login-wrap">
+      <div class="nsbm-top"><img src="assets/nsbm-logo.png" alt="NSBM Green University Town"></div>
+      <div class="login-card gold-card">
+        <div class="association-brand">
+          <div class="association-emblem"><img src="assets/compuvate-logo.png" alt="CompuVate Association logo"></div>
+          <span class="association-wordmark">CompuVate Association</span>
+          <span class="association-tagline">COMPETE | INNOVATE | ELEVATE</span>
+        </div>
+        <div class="gold-divider"><span>◇</span></div>
+        <h1 id="login-title">DIGITAL OIL LAMP 0.1</h1>
+        <p class="login-subtitle">Ceremony Control</p>
+        <form id="login-form" novalidate>
+          <label class="field-label" for="login-username">Username</label>
+          <div class="input-icon-wrap"><span aria-hidden="true">♟</span><input id="login-username" name="username" type="text" autocomplete="username" placeholder="Enter username" required></div>
+          <label class="field-label" for="login-password">Password</label>
+          <div class="input-icon-wrap"><span aria-hidden="true">▣</span><input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Enter password" required></div>
+          <p id="login-error" class="form-error" role="alert" aria-live="polite"></p>
+          <button type="submit" class="button button-primary login-button">SIGN IN</button>
+        </form>
+      </div>
+      <p class="login-footer">PROBLEM LAB 1.0</p>
+    </div>
+  </section>
+
+  <section class="screen setup-screen" id="setup-screen" aria-labelledby="setup-heading" hidden>
+    <header class="app-header">
+      <div class="header-left">
+        <div class="header-nsbm"><img src="assets/nsbm-logo.png" alt="NSBM Green University Town"></div>
+        <div class="header-rule"></div>
+        <div class="header-app-name">DIGITAL OIL LAMP 0.1</div>
+      </div>
+      <div class="header-right"><span id="setup-heading">Ceremony Setup</span><div class="header-compuvate"><img src="assets/compuvate-logo.png" alt="CompuVate Association"></div></div>
+    </header>
+
+    <main class="setup-grid">
+      <div class="setup-main gold-card">
+        <section class="setup-section event-details" aria-labelledby="event-heading">
+          <h2 id="event-heading"><span aria-hidden="true">▤</span> EVENT DETAILS</h2>
+          <div class="event-grid">
+            <label for="event-title">Event title</label>
+            <input id="event-title" type="text" value="Problem Lab 1.0" maxlength="80">
+            <label for="title-font">Title font</label>
+            <select id="title-font" aria-label="Event title font">
+              <option value="Georgia">Georgia</option>
+              <option value="Cinzel">Cinzel</option>
+              <option value="Cormorant Garamond">Cormorant Garamond</option>
+              <option value="Playfair Display">Playfair Display</option>
+              <option value="EB Garamond">EB Garamond</option>
+              <option value="Libre Baskerville">Libre Baskerville</option>
+              <option value="Merriweather">Merriweather</option>
+              <option value="Baskerville">Baskerville</option>
+              <option value="Garamond">Garamond</option>
+              <option value="Times New Roman">Times New Roman</option>
+            </select>
+            <label for="background-file">Background image</label>
+            <div class="file-control"><span id="background-name">No image selected</span><button type="button" class="button button-outline" id="background-upload">UPLOAD IMAGE</button><input id="background-file" type="file" accept="image/*" hidden></div>
+          </div>
+        </section>
+
+        <section class="setup-section layout-section" aria-labelledby="layout-heading">
+          <h2 id="layout-heading"><span aria-hidden="true">⚙</span> LAMP LAYOUT</h2>
+          <div class="layout-counters">
+            <div class="counter-group"><span>Oil lamp count</span><div class="stepper"><button type="button" id="lamp-minus" aria-label="Decrease oil lamp count">−</button><output id="lamp-count">9</output><button type="button" id="lamp-plus" aria-label="Increase oil lamp count">+</button></div></div>
+            <div class="counter-group"><span>Row count</span><div class="stepper"><button type="button" id="row-minus" aria-label="Decrease row count">−</button><output id="row-count">3</output><button type="button" id="row-plus" aria-label="Increase row count">+</button></div></div>
+          </div>
+          <div class="layout-editor">
+            <div id="row-controls" class="row-controls" aria-label="Lamps in each row"></div>
+            <div class="mini-layout-wrap"><div id="mini-layout" class="mini-layout" aria-label="Lamp arrangement preview"></div><p id="layout-summary">9 lamps across 3 rows</p></div>
+          </div>
+        </section>
+
+        <section class="setup-section guests-section" aria-labelledby="guests-heading">
+          <div class="section-title-row"><h2 id="guests-heading"><span aria-hidden="true">♟</span> GUESTS &amp; SENIORITY</h2><span id="guest-count" class="count-label">9 guests</span><button class="button button-outline" id="add-guest" type="button">+ ADD GUEST</button><button class="button button-outline" id="edit-order" type="button">↕ EDIT ORDER</button></div>
+          <div class="guest-table-scroll">
+            <table class="guest-table"><thead><tr><th scope="col">Order</th><th scope="col">Guest name</th><th scope="col">Designation</th><th scope="col">Photo</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody id="guest-rows"></tbody></table>
+          </div>
+        </section>
+      </div>
+
+      <aside class="preview-column">
+        <div class="gold-card preview-card">
+          <h2><span aria-hidden="true">◉</span> LAMP PREVIEW</h2>
+          <div class="preview-stage"><iframe id="setup-lamp-3d" class="lamp-3d-frame" src="assets/lamp3d/embed.html?mode=preview" title="Live 3D preview of the selected oil lamp" loading="eager"></iframe></div>
+          <div class="preview-controls">
+            <div class="range-label"><label for="flame-size">Flame size</label><output id="flame-size-value">70%</output></div>
+            <div class="range-control"><button type="button" data-adjust="flameSize" data-delta="-5" aria-label="Decrease flame size">−</button><input id="flame-size" type="range" min="10" max="100" value="70"><button type="button" data-adjust="flameSize" data-delta="5" aria-label="Increase flame size">+</button></div>
+            <div class="range-label"><label for="flame-volume">Flame volume</label><output id="flame-volume-value">70%</output></div>
+            <div class="range-control"><button type="button" data-adjust="flameVolume" data-delta="-5" aria-label="Decrease flame volume">−</button><input id="flame-volume" type="range" min="10" max="100" value="70"><button type="button" data-adjust="flameVolume" data-delta="5" aria-label="Increase flame volume">+</button></div>
+            <div class="range-label"><label for="light-intensity">Light intensity</label><output id="light-intensity-value">80%</output></div>
+            <div class="range-control"><button type="button" data-adjust="lightIntensity" data-delta="-5" aria-label="Decrease light intensity">−</button><input id="light-intensity" type="range" min="10" max="100" value="80"><button type="button" data-adjust="lightIntensity" data-delta="5" aria-label="Increase light intensity">+</button></div>
+          </div>
+        </div>
+        <section class="display-settings-card" aria-label="Optional ceremony display settings">
+          <div class="display-settings-heading"><span class="optional-label">OPTIONAL</span><p>Choose how guests appear</p></div>
+          <button type="button" class="button button-outline" id="display-settings" aria-haspopup="dialog" aria-controls="display-settings-dialog"><span class="display-settings-icon" aria-hidden="true">▧</span> DISPLAY SETTINGS <span aria-hidden="true">›</span></button>
+          <p id="display-settings-summary" class="display-settings-summary" role="status">Photos, names &amp; designations</p>
+        </section>
+        <div class="setup-actions"><button type="button" class="button button-secondary" id="save-setup">▣ SAVE SETUP</button><button type="button" class="button button-primary" id="generate">GENERATE →</button></div>
+      </aside>
+    </main>
+    <footer class="app-footer">PROBLEM LAB 1.0</footer>
+  </section>
+
+  <section class="screen ceremony-screen" id="ceremony-screen" aria-labelledby="ceremony-title" tabindex="-1" hidden>
+    <header class="ceremony-header">
+      <div class="ceremony-brand ceremony-brand-left"><img src="assets/nsbm-logo.png" alt="NSBM Green University Town"></div>
+      <div class="ceremony-heading"><p>COMPUVATE ASSOCIATION</p><h1 id="ceremony-title">PROBLEM LAB 1.0</h1><div class="ceremony-subtitle">DIGITAL OIL LAMP CEREMONY</div></div>
+      <div class="ceremony-brand ceremony-brand-right"><img src="assets/compuvate-logo.png" alt="CompuVate Association"></div>
+      <div class="ceremony-tools"><button type="button" id="ceremony-tools-toggle" aria-label="Operator options" aria-expanded="false">⋯</button><div id="ceremony-tools-menu" hidden><button type="button" id="back-to-setup">EDIT SETUP</button><button type="button" id="preview-finale">PREVIEW FINALE</button><button type="button" id="reset-ceremony">RESET CEREMONY</button><button type="button" id="fullscreen-ceremony">FULLSCREEN</button></div></div>
+    </header>
+    <main class="ceremony-main">
+      <article class="guest-spotlight"><div class="portrait-frame"><img id="ceremony-photo" src="assets/first-guest.png" alt="Current guest"><span id="ceremony-photo-placeholder" hidden>PHOTO PENDING</span></div><div class="guest-nameplate"><h2 id="ceremony-guest-name">Professor Thilini De Silva</h2><p id="ceremony-designation">Deputy Vice Chancellor</p></div></article>
+      <div class="ceremony-lamp-stage"><div class="ceremony-lamp-arc" aria-hidden="true"></div><div class="ceremony-pedestal" aria-hidden="true"></div><button type="button" id="ceremony-lamp-button" class="ceremony-lamp-button" aria-label="Light the current guest's lamp"><span class="ceremony-bowl"><iframe id="ceremony-lamp-3d" class="lamp-3d-frame" src="assets/lamp3d/embed.html?mode=ceremony" title="Ceremony 3D oil lamp" tabindex="-1" loading="eager"></iframe></span></button></div>
+      <aside class="ceremony-progress"><span>GUEST</span><strong id="ceremony-count">01 / 09</strong><div class="progress-rule" aria-hidden="true">✦</div><p id="ceremony-hint">Touch or click the lamp to light the flame</p><div class="progress-rule" aria-hidden="true">✦</div></aside>
+    </main>
+    <div id="status-board" class="status-board" aria-label="Ceremony lamp status"><div id="status-grid" class="status-grid"></div><canvas id="status-lamp-canvas" aria-hidden="true"></canvas></div>
+    <nav class="ceremony-controls" aria-label="Ceremony controls"><button type="button" id="previous-guest">❮ &nbsp; PREVIOUS</button><button type="button" id="undo-lighting">↶ &nbsp; UNDO</button><button type="button" id="pause-ceremony" aria-pressed="false">Ⅱ &nbsp; PAUSE</button><button type="button" id="next-guest">NEXT GUEST &nbsp; ❯</button><button type="button" id="presentation-fullscreen" aria-label="Enter fullscreen presentation; press Escape to return to ceremony controls"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> FULLSCREEN</button></nav>
+    <button type="button" id="presentation-exit" aria-label="Exit presentation and restore ceremony controls" hidden>EXIT PRESENTATION</button>
+    <div id="ceremony-motion-layer" aria-hidden="true"></div>
+    <section id="finale-layer" class="finale-layer" aria-label="Ceremony finale" hidden><div class="finale-aura" aria-hidden="true"></div><canvas id="finale-3d" aria-label="Three dimensional event logo"></canvas><img id="finale-logo-fallback" src="assets/problem-lab-logo.jpg" alt="Problem Lab" hidden><div class="finale-caption"><p id="finale-eyebrow">NINE FLAMES. ONE SHARED FUTURE.</p><h2 id="finale-welcome"></h2><p class="finale-tagline">SOLVE. <span>ADAPT.</span> DEFEND.</p></div></section>
+    <div id="motion-status" class="sr-only" role="status" aria-live="polite"></div>
+  </section>
+
+  <dialog id="display-settings-dialog" class="modal display-settings-modal" aria-labelledby="display-settings-title" aria-describedby="display-settings-help">
+    <form id="display-settings-form" method="dialog">
+      <div class="modal-head"><h2 id="display-settings-title">DISPLAY SETTINGS</h2><button type="button" class="close-button" data-close="display-settings-dialog" aria-label="Close display settings">×</button></div>
+      <p id="display-settings-help" class="modal-help">Choose what guests see during the ceremony.</p>
+      <fieldset class="display-mode-options">
+        <legend class="sr-only">Guest display</legend>
+        <label class="display-mode-option"><input type="radio" name="guestDisplayMode" value="both" checked><span class="mode-preview mode-preview-both" aria-hidden="true"><span class="mode-preview-portrait"></span><span class="mode-preview-lines"></span></span><span class="mode-option-copy"><strong>Photos &amp; names</strong><span>Guest photos, names and designations</span></span><span class="mode-option-check" aria-hidden="true">✓</span></label>
+        <label class="display-mode-option"><input type="radio" name="guestDisplayMode" value="photos-only"><span class="mode-preview mode-preview-photos" aria-hidden="true"><span class="mode-preview-portrait"></span></span><span class="mode-option-copy"><strong>Photos only</strong><span>Guest photos without names or designations</span></span><span class="mode-option-check" aria-hidden="true">✓</span></label>
+        <label class="display-mode-option"><input type="radio" name="guestDisplayMode" value="names-only"><span class="mode-preview mode-preview-names" aria-hidden="true"><span class="mode-preview-lines"></span></span><span class="mode-option-copy"><strong>Names only</strong><span>Guest names and designations without photos</span></span><span class="mode-option-check" aria-hidden="true">✓</span></label>
+      </fieldset>
+      <div class="modal-actions"><button type="button" class="button button-secondary" data-close="display-settings-dialog">CANCEL</button><button type="submit" class="button button-primary" id="save-display-settings">SAVE SETTINGS</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="guest-dialog" class="modal"><form id="guest-form" method="dialog"><div class="modal-head"><h2 id="guest-dialog-title">ADD GUEST</h2><button type="button" class="close-button" data-close="guest-dialog" aria-label="Close guest popup">×</button></div><div class="guest-form-grid"><div class="guest-form-fields"><label for="guest-name">Guest name</label><input id="guest-name" type="text" maxlength="100" required><label for="guest-designation">Designation</label><input id="guest-designation" type="text" maxlength="150" required><label for="guest-position">Seniority order</label><div class="stepper modal-stepper"><button type="button" id="position-minus" aria-label="Decrease seniority position">−</button><input id="guest-position" type="number" min="1" value="1"><button type="button" id="position-plus" aria-label="Increase seniority position">+</button></div></div><div class="guest-photo-field"><label for="guest-photo-file">Guest photo</label><div class="photo-preview"><img id="guest-photo-preview" alt="Selected guest photo preview" hidden><span id="guest-photo-placeholder">No photo selected</span></div><button type="button" class="button button-outline" id="choose-guest-photo">CHOOSE PHOTO</button><input id="guest-photo-file" type="file" accept="image/*" hidden></div></div><p id="guest-error" class="form-error" role="alert"></p><div class="modal-actions"><button type="button" class="button button-secondary" data-close="guest-dialog">CANCEL</button><button type="submit" class="button button-primary">SAVE GUEST</button></div></form></dialog>
+
+  <dialog id="order-dialog" class="modal"><div class="modal-head"><h2>EDIT SENIORITY ORDER</h2><button type="button" class="close-button" data-close="order-dialog" aria-label="Close order popup">×</button></div><p class="modal-help">Drag guests or use the arrows. The first guest lights first.</p><div id="order-list" class="order-list"></div><div class="modal-actions"><button type="button" class="button button-secondary" data-close="order-dialog">CANCEL</button><button type="button" class="button button-secondary" id="reset-order">RESET ORDER</button><button type="button" class="button button-primary" id="save-order">SAVE ORDER</button></div></dialog>
+
+  <dialog id="confirm-dialog" class="modal confirm-modal"><div class="modal-head"><h2 id="confirm-title">Confirm action</h2><button type="button" class="close-button" data-close="confirm-dialog" aria-label="Close confirmation">×</button></div><p id="confirm-text"></p><div class="modal-actions"><button type="button" class="button button-secondary" data-close="confirm-dialog">CANCEL</button><button type="button" class="button button-primary" id="confirm-accept">CONFIRM</button></div></dialog>
+  <div id="guest-menu" class="guest-menu" role="menu" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

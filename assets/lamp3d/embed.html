@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CompuVate 3D Oil Lamp</title>
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: transparent; }
+    canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+    [hidden] { display: none !important; }
+  </style>
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <script type="module" src="./model.js"></script>
+</head>
+<body>
+  <canvas id="scene" aria-label="3D oil lamp"></canvas>
+  <div hidden><button id="ignite">Ignite</button><button id="reset">Reset</button><button id="download">Download</button><span id="status"></span></div>
+</body>
+</html>

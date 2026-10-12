@@ -1,0 +1,113 @@
+.ceremony-screen {
+  height: 100svh;
+  padding: 2vh 4vw 1vh;
+  grid-template-rows: 14% 38% 40% 8%;
+  gap: 0;
+  background: radial-gradient(ellipse at 52% 31%, #143354 0%, #061b34 40%, #020d21 74%, #010916 100%);
+}
+.ceremony-screen::before { opacity: .52; }
+.ceremony-screen::after { opacity: .18; }
+.ceremony-heading h1 { text-transform: uppercase; font-size: clamp(26px, 4.4vw, 82px); }
+.ceremony-subtitle { font-size: clamp(9px, 1.15vw, 23px); color: #c4daed; }
+.ceremony-main { min-height: 0; grid-template-columns: 30% 46% 24%; }
+.portrait-frame { height: min(28vh, 300px); width: min(90%, 22vw, 36vh); border-width: 2px; border-radius: 16px; box-shadow: 0 0 0 3px #aa7d38, 0 0 36px #efaf4229; }
+.guest-spotlight h2 { font-size: clamp(16px, 1.75vw, 34px); }
+.guest-spotlight p { font-size: clamp(11px, 1.13vw, 22px); color: #f1cc8d; }
+.ceremony-lamp-arc { height: 90%; border-color: #cf9d5299; box-shadow: 0 -9px 26px -17px #ffe29b; }
+.ceremony-pedestal { height: 18%; border-radius: 50% 50% 10% 10%; border-color: #a8844788; background: linear-gradient(#283a51, #071427); }
+.ceremony-progress strong { font-weight: 400; font-size: clamp(31px, 4vw, 74px); }
+#ceremony-hint { font-size: clamp(14px, 1.55vw, 30px); }
+#ceremony-hint span:last-child { color: #b7c7d8; font-size: .8em; margin-top: .4em; }
+.status-board { padding: .6vh 5vw; display: block; background: linear-gradient(130deg,#071c32d9,#030d20db); border-color: #a98a5199; box-shadow: inset 0 1px #d8e6f022, 0 18px 45px #0005; overflow: visible; }
+.status-grid { display: flex; flex-direction: column; justify-content: space-evenly; height: 100%; }
+.status-row { flex: 1; height: 0; min-height: 0; gap: 1vw; }
+.status-lamp { width: min(100%, 13vw); min-height: 0; gap: 1px; justify-content: center; }
+.guest-token {
+  position: relative;
+  z-index: 4;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(22px, calc(12vh / var(--board-rows, 3)), 48px);
+  height: clamp(22px, calc(12vh / var(--board-rows, 3)), 48px);
+  margin-bottom: -4px;
+  opacity: 0;
+  border: 1px solid #75c5ff;
+  border-radius: 8px;
+  background: #0b2543;
+  overflow: hidden;
+  box-shadow: 0 0 11px #51aaff44;
+}
+.guest-token img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
+.guest-token .token-initials { font: 600 11px 'Segoe UI', sans-serif; color: #d6e9ff; }
+.guest-token.token-visible { opacity: 1; }
+.status-bowl { width: clamp(80px, 11vw, 210px); max-width: 100%; height: clamp(22px, calc(21vh / var(--board-rows, 3)), 90px); flex: none; z-index: 1; }
+.status-bowl img { opacity: 1; }
+.status-lamp strong { z-index: 4; flex: none; overflow: visible; font: 600 clamp(9px, calc(4.5vh / var(--board-rows, 3)), 17px) 'Segoe UI', sans-serif; color: #7693b2; letter-spacing: .1em; }
+.status-lamp.lit strong { color: #ffd899; }
+.status-lamp.active .status-bowl::before { top: 35%; bottom: 0; border-color: #d8ad5666; box-shadow: 0 0 15px #efc76233; }
+.status-lamp.lit .status-bowl { filter: none; }
+#status-lamp-canvas { z-index: 2; border-radius: inherit; }
+.status-board[data-lamp3d-ready='true'] .status-bowl img, .status-board[data-lamp3d-ready='true'] .status-bowl .flame { visibility: hidden; }
+.ceremony-controls { gap: 1.1vw; z-index: 12; }
+.ceremony-controls button { min-width: min(10vw, 160px); height: clamp(36px, 5vh, 55px); font-size: clamp(9px, .85vw, 17px); border-color: #428abf77; background: linear-gradient(#0e2944, #06172c); box-shadow: 0 0 0 1px #5ac5ff11; }
+.ceremony-controls #pause-ceremony { color: #a6daff; }
+.ceremony-controls #next-guest { background: linear-gradient(#144f43,#032d25); border-color: #5adca8; box-shadow: 0 0 18px #3feea733; }
+.ceremony-controls #next-guest:disabled { display: none; }
+.ceremony-tools { right: .7vw; top: 1.5vh; position: absolute; z-index: 22; }
+.ceremony-screen.rehearsal::after { content: 'FINALE PREVIEW'; transform: none; height: auto; top: 1.5vh; left: 1vw; right: auto; bottom: auto; background: none; color: #84bbdc; opacity: .8; font: 600 10px 'Segoe UI',sans-serif; letter-spacing: .17em; }
+[data-motion-busy='true'] #ceremony-lamp-button { pointer-events: none; }
+.motion-paused::after { content: 'PAUSED'; transform: none; height: auto; bottom: 8vh; left: 0; right: 0; color: #9de6ff; font: 700 12px 'Segoe UI',sans-serif; letter-spacing: .3em; opacity: 1; background: none; }
+.portrait-departing .guest-spotlight .portrait-frame { visibility: hidden; }
+.portrait-departing .guest-spotlight h2,.portrait-departing .guest-spotlight p { visibility: hidden; opacity: 0; transition: none; }
+#ceremony-motion-layer { position: absolute; inset: 0; pointer-events: none; z-index: 20; }
+.portrait-flight { position: fixed; overflow: hidden; border: 2px solid #ffd787; border-radius: 16px; box-shadow: 0 0 30px #55c6ff66, 0 0 4px #ffc776; transform-origin: 0 0; backface-visibility: visible; background: #102541; }
+.portrait-flight img { width: 100%; height: 100%; object-fit: cover; object-position: center 24%; }
+.portrait-flight span { display: grid; place-items: center; height: 100%; color: #d8edff; }
+.finale-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+.finale-aura { position: absolute; width: 70vh; height: 70vh; top: 7%; left: 50%; transform: translateX(-50%); background: radial-gradient(ellipse,#073b7270 0,#0b326644 28%,transparent 70%); filter: blur(30px); }
+#finale-3d { position: absolute; width: 100%; height: 74%; top: 0; left: 0; }
+#finale-logo-fallback { width: min(48vw, 46vh); max-height: 52vh; position: absolute; top: 15%; object-fit: contain; border-radius: 26px; box-shadow: 0 0 70px #328ffe66; }
+.finale-caption { position: absolute; top: 68%; width: 100%; padding: 0 5vw; text-align: center; }
+#finale-eyebrow { margin: 0 0 1.6vh; color: #87bcd9; font: 500 clamp(9px, 1vw, 19px) 'Segoe UI',sans-serif; letter-spacing: .3em; }
+#finale-welcome { margin: 0; font-weight: 400; line-height: 1; }
+.welcome-lead { display: block; color: #c3e6ff; font: 500 clamp(13px, 1.3vw, 25px) 'Segoe UI',sans-serif; margin-bottom: 1vh; letter-spacing: .3em; }
+.welcome-title { display: block; font: 400 clamp(28px, 4vw, 76px) Cinzel,Georgia,serif; color: #ffe0a1; text-shadow: 0 0 30px #ca9d4a55; }
+.welcome-title > span { display: inline-block; }
+.finale-tagline { font: 600 clamp(10px,.9vw,18px) 'Segoe UI',sans-serif; color: #748dab; letter-spacing: .25em; margin: 1vh 0 0; opacity: 0; }
+.finale-tagline span { color: #59dcdd; margin: 0 1em; }
+.finale-running .ceremony-main,.finale-running .ceremony-header { opacity: 0; pointer-events: none; transition: opacity 1s; }
+.finale-running .ceremony-tools { opacity: 1; }
+.finale-running .status-board { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 0; margin: 0; padding: 0; background: transparent; box-shadow: none; z-index: 5; }
+.finale-running .status-grid,.finale-running .status-row { display: contents; }
+.finale-running .status-lamp { display: block; }
+.finale-running .status-lamp .guest-token,.finale-running .status-lamp strong,.finale-running .status-lamp .name { display: none; }
+.finale-running .status-lamp.active .status-bowl::before { display: none; }
+.finale-running .ceremony-controls { position: absolute; bottom: 1.5vh; left: 0; right: 0; }
+.finale-running:not(.finale-welcome) .finale-caption { top: 79%; }
+.finale-running #previous-guest { display: none; }
+.finale-welcome .status-board { pointer-events: none; }
+.finale-welcome #status-lamp-canvas { opacity: 0; transition: opacity 1s; }
+.finale-welcome .finale-tagline { opacity: 1; transition: opacity 2s 3s; }
+.finale-running::before { opacity: .3; transition: opacity 1.5s; }
+
+@media (max-width: 650px) and (max-aspect-ratio: 4/3) {
+  .ceremony-screen { height: auto; min-height: 100svh; padding: 12px; grid-template-rows: auto auto auto auto; gap: 8px; }
+  .ceremony-header { min-height: 60px; }
+  .ceremony-main { grid-template-columns: 1fr 1fr; min-height: 0; }
+  .ceremony-lamp-stage { min-height: 240px; }
+  .portrait-frame { width: 120px; height: 130px; }
+  .status-board { min-height: 290px; }
+  .status-row { min-height: 90px; }
+  .status-bowl { width: 95px; height: 50px; }
+  .guest-token { width: 32px; height: 32px; }
+  .ceremony-controls button { min-width: 0; flex: 1; }
+  .finale-running { height: 100svh; }
+  .finale-caption { top: 69%; }
+  .welcome-title { font-size: 32px; }
+  .finale-running .ceremony-controls { padding: 0 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ceremony-screen { scroll-behavior: auto; }
+  .finale-tagline { transition-delay: 0s; }
+}

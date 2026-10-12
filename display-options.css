@@ -1,0 +1,130 @@
+/* Optional guest presentation choices, sharing the ceremony's cool palette. */
+.display-settings-card {
+  padding: 16px;
+  border: 1px solid #416b87;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #102e46dd, #071b30ee);
+  box-shadow: inset 0 1px #c8e8f810;
+}
+.display-settings-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+.display-settings-heading p { margin: 0; color: #c8e8f8; font: 500 14px 'Segoe UI', Arial, sans-serif; }
+.optional-label { padding: 4px 7px; border: 1px solid #426b84; border-radius: 5px; color: #8fc5dc; font: 700 10px 'Segoe UI', Arial, sans-serif; letter-spacing: .12em; }
+#display-settings { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 9px; color: #d8f2fa; font: 700 14px 'Segoe UI', Arial, sans-serif; letter-spacing: .045em; }
+#display-settings > span:last-child { margin-left: auto; color: #6ad4e5; font-size: 25px; font-weight: 400; }
+.display-settings-icon { margin-right: auto; color: #83d5e8; font-size: 23px; }
+.display-settings-summary { margin: 9px 0 0; color: #9fc3d8; text-align: center; font: 400 13px/1.4 'Segoe UI', Arial, sans-serif; }
+.display-settings-modal { width: min(630px, calc(100% - 28px)); }
+.display-settings-modal .modal-head { align-items: center; padding-bottom: 14px; }
+.display-settings-modal .modal-head h2 { margin: 0; font-size: clamp(20px, 3vw, 28px); letter-spacing: .055em; }
+.display-settings-modal .close-button { align-self: center; width: 44px; height: 44px; flex: none; }
+.display-settings-modal .modal-help { color: #afcddd; font: 400 16px/1.5 'Segoe UI', Arial, sans-serif; }
+.display-mode-options { display: grid; gap: 12px; border: 0; padding: 0; margin: 18px 0 22px; }
+.display-mode-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 16px;
+  min-height: 96px;
+  padding: 16px;
+  border: 1px solid #466f88;
+  border-radius: 12px;
+  background: #081e33;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.display-mode-option:hover { border-color: #82c3d9; background: #12334b; }
+.display-mode-option input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.display-mode-option:has(input:checked) { border-color: #71d9e6; background: linear-gradient(120deg, #19435a, #0b293f); box-shadow: inset 0 0 0 1px #71d9e638, 0 0 17px #44bdde16; }
+.display-mode-option:has(input:focus-visible) { outline: 3px solid #67dce9; outline-offset: 3px; }
+.mode-option-copy { display: grid; gap: 5px; }
+.mode-option-copy strong { color: #e2f5fb; font: 600 18px/1.2 'Segoe UI', Arial, sans-serif; }
+.mode-option-copy > span { color: #a9c7d9; font: 400 13px/1.4 'Segoe UI', Arial, sans-serif; }
+.mode-option-check { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid #567f97; border-radius: 50%; color: transparent; font: 700 15px 'Segoe UI', Arial, sans-serif; }
+.display-mode-option:has(input:checked) .mode-option-check { color: #071b31; border-color: #8ce4ed; background: #84dce8; }
+.mode-preview { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 62px; border: 1px solid #497e98; border-radius: 9px; background: linear-gradient(#173a53, #0a2035); }
+.mode-preview-portrait { position: relative; width: 26px; height: 29px; overflow: hidden; border: 1px solid #85c5d9; border-radius: 5px; background: #2c5670; }
+.mode-preview-portrait::before { content: ''; position: absolute; left: 8px; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: #a8dbea; }
+.mode-preview-portrait::after { content: ''; position: absolute; left: 4px; top: 15px; width: 16px; height: 17px; border-radius: 9px 9px 0 0; background: #a8dbea; }
+.mode-preview-lines { display: block; width: 34px; height: 3px; border-radius: 3px; background: #b4deed; box-shadow: 0 6px #5e97b2; }
+.mode-preview-both .mode-preview-lines { width: 26px; height: 2px; box-shadow: 0 4px #5e97b2; }
+.mode-preview-photos .mode-preview-portrait { width: 34px; height: 41px; }
+.mode-preview-photos .mode-preview-portrait::before { left: 11px; top: 6px; width: 10px; height: 10px; }
+.mode-preview-photos .mode-preview-portrait::after { left: 5px; top: 22px; width: 22px; height: 21px; }
+.display-settings-modal .modal-actions .button { min-height: 46px; }
+
+/* Keep the nameplate wrapper neutral in the default photos and names mode. */
+.guest-nameplate { max-width: 100%; }
+.portrait-departing .guest-nameplate { visibility: hidden; }
+.guest-token .token-name { display: none; }
+.token-photo-placeholder { display: grid; place-items: center; width: 100%; height: 100%; color: #b8ddec; font-size: 22px; }
+[data-guest-display='photos-only'] .guest-nameplate,
+[data-guest-display='photos-only'] #ceremony-guest-name,
+[data-guest-display='photos-only'] #ceremony-designation,
+[data-guest-display='photos-only'] .token-name,
+[data-guest-display='photos-only'] .token-initials,
+[data-guest-display='photos-only'] .status-lamp .name,
+[data-guest-display='photos-only'] .name-flight { display: none !important; }
+[data-guest-display='photos-only'] .guest-spotlight { padding-bottom: 0; }
+[data-guest-display='names-only'] .guest-spotlight .portrait-frame,
+[data-guest-display='names-only'] .guest-token img,
+[data-guest-display='names-only'] .guest-token .token-initials { display: none !important; }
+[data-guest-display='names-only'] .guest-nameplate {
+  width: 100%;
+  max-width: 440px;
+  padding: clamp(16px, 2.2vw, 34px) clamp(12px, 1.7vw, 28px);
+  border: 1px solid #6faac699;
+  border-radius: 18px;
+  background: linear-gradient(140deg, #173b53db, #091f36e8);
+  box-shadow: inset 0 1px #d0f2ff1a, 0 0 28px #38b9d51c;
+}
+[data-guest-display='names-only'] .guest-nameplate h2 { margin: 0 0 12px; font-size: clamp(20px, 2.2vw, 42px); line-height: 1.15; overflow-wrap: anywhere; }
+[data-guest-display='names-only'] .guest-nameplate p { margin: 0 auto; color: #a3cce1; font-size: clamp(13px, 1.35vw, 25px); line-height: 1.4; }
+[data-guest-display='names-only'] .guest-token {
+  width: min(100%, 16vw);
+  height: auto;
+  min-height: clamp(26px, calc(12vh / var(--board-rows, 3)), 48px);
+  padding: 4px 8px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(#1b4862, #0a263c);
+}
+[data-guest-display='names-only'] .guest-token .token-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; max-width: 100%; overflow: hidden; color: #dff4fb; font: 600 clamp(9px, 1vw, 17px)/1.2 'Segoe UI', Arial, sans-serif; text-align: center; overflow-wrap: anywhere; }
+.name-flight { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 12px; }
+.name-flight h2 { color: #e5f3fb; margin: 0 0 8px; font: 700 clamp(20px, 2.2vw, 42px)/1.15 Georgia, serif; overflow-wrap: anywhere; }
+.name-flight p { color: #a3cce1; margin: 0; font: 500 clamp(13px, 1.35vw, 25px)/1.4 'Segoe UI', Arial, sans-serif; }
+
+/* Presentation controls retain their layout footprint while fullscreen. */
+.ceremony-controls button { min-height: 44px; touch-action: manipulation; }
+#presentation-fullscreen { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: max(132px, 11vw); border-color: #86dce8; color: #e4faff; background: linear-gradient(#1b607b, #123c54); box-shadow: 0 0 18px #4acadd33; white-space: nowrap; }
+#presentation-fullscreen:hover { box-shadow: 0 0 24px #55d1e04d; }
+#presentation-fullscreen svg { flex: none; }
+.ceremony-screen.presentation-mode .ceremony-controls,
+.ceremony-screen.presentation-mode .ceremony-tools { visibility: hidden; pointer-events: none; }
+.ceremony-screen:fullscreen { width: 100vw; height: 100svh; min-height: 100svh; margin: 0; max-width: none; max-height: none; }
+.ceremony-screen:fullscreen::backdrop { background: #030e20; }
+.ceremony-screen.presentation-fallback { min-height: 100svh; }
+#presentation-exit { position: absolute; right: 12px; bottom: 12px; z-index: 50; min-height: 44px; padding: 8px 14px; border: 1px solid #80c9df; border-radius: 8px; background: #0b2840e8; color: #d7eff9; font: 600 11px 'Segoe UI', Arial, sans-serif; touch-action: manipulation; }
+
+@media (max-width: 650px) {
+  .display-settings-modal { padding: 18px 16px; }
+  .display-mode-option { grid-template-columns: 48px minmax(0, 1fr) 24px; gap: 10px; min-height: 94px; padding: 13px 10px; }
+  .mode-preview { min-height: 56px; }
+  .mode-option-copy strong { font-size: 16px; }
+  .mode-option-copy > span { font-size: 12px; }
+  .display-settings-modal .modal-actions { flex-wrap: nowrap; }
+  .display-settings-modal .modal-actions .button { flex: 1; min-width: 0; padding: 9px 10px; font-size: 13px; }
+  [data-guest-display='names-only'] .guest-nameplate { padding: 16px 10px; border-radius: 12px; }
+  [data-guest-display='names-only'] .guest-nameplate h2 { font-size: 21px; margin-bottom: 8px; }
+  [data-guest-display='names-only'] .guest-nameplate p { font-size: 12px; }
+  [data-guest-display='names-only'] .guest-token { width: 100%; padding: 4px; min-height: 32px; }
+  [data-guest-display='names-only'] .guest-token .token-name { font-size: 10px; }
+  .ceremony-controls { row-gap: 8px; }
+  #presentation-fullscreen { flex: 0 0 auto; min-width: 132px; font-size: 11px; padding: 0 14px; }
+  .ceremony-screen:fullscreen { overflow-y: auto; grid-template-rows: max-content max-content max-content max-content; }
+  .ceremony-screen:fullscreen .ceremony-main { min-height: max-content; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .display-mode-option { transition: none; }
+}
